@@ -9,7 +9,18 @@ void printf(char* s)
     }
 }
 
-extern "C" void entry(void* multiboot_struct, unsigned int magicnumber)
+typedef void (*constructor)();
+extern "C" constructor start_ctors;
+extern "C" constructor end_ctors;
+extern "C" void callConstructors()
+{
+    for(constructor* i = &start_ctors; i != &end_ctors; i++)
+    {
+        (*i)();
+    }
+}
+
+extern "C" void entry(const void* multiboot_struct, unsigned int magicnumber)
 {
     printf("Hello World!\n");
     while(1);
