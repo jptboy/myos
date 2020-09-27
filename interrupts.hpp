@@ -10,12 +10,15 @@ struct InterruptManager
     static void HandleInterruptRequest0x00();
     static void HandleInterruptRequest0x01();
     static void IgnoreInterruptRequest();
+    uint32_t DoHandleInterrupt(uint8_t interruptNumber, uint32_t esp);
     void Activate();
+    void Deactivate();
 
     InterruptManager(GlobalDescriptorTable* gdt);
     ~InterruptManager();
 
     protected:
+        static InterruptManager* ActiveInterruptManager;
         struct GateDescriptor
         {
             uint16_t handlerAddressLowBits;
