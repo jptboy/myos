@@ -3,6 +3,25 @@
 
 extern void print(char* s);
 
+InterruptHandler::InterruptHandler(uint8_t interruptNumber, InterruptManager* interruptManager) : 
+    interruptNumber(interruptNumber),
+    interruptManager(interruptManager)
+{
+    interruptManager->handlers[interruptNumber] = this;
+};
+
+InterruptHandler::~InterruptHandler()
+{
+
+};
+
+
+uint32_t InterruptHandler::HandleInterrupt(uint32_t esp)
+{
+    return esp;
+};
+
+
 InterruptManager::GateDescriptor InterruptManager::interruptDescriptorTable[256];
 
 InterruptManager* InterruptManager::ActiveInterruptManager = 0;
@@ -43,6 +62,7 @@ InterruptManager::InterruptManager(GlobalDescriptorTable* gdt):
             0,
             IDT_INTERRUPT_GATE
         );
+        handlers[i] = 0;
     }
     SetInterruptDescriptorTableEntry(0x20, CodeSegment, &HandleInterruptRequest0x00, 0, IDT_INTERRUPT_GATE);
     SetInterruptDescriptorTableEntry(0x21, CodeSegment, &HandleInterruptRequest0x01, 0, IDT_INTERRUPT_GATE);
@@ -105,7 +125,21 @@ void InterruptManager::Deactivate()
 
 uint32_t InterruptManager::DoHandleInterrupt(uint8_t interruptNumber, uint32_t esp)
 {
-    print("Interrupt");
+
+    if(handlers[interruptNumber] != 0)
+    {
+        esp = handlers[interruptNumber]->HandleInterrupt(esp);
+    }
+    else if(interruptNumber != 0x20)
+    {
+        char* message = "Unhandled interrupt 0x";
+        char* message2 =  "00\n";
+        char* numbers = "0123456789ABCDEF";
+        message2[0] = numbers[(interruptNumber >> 4) & 0xF];
+        message2[1] = numbers[interruptNumber & 0xF];
+        print(message);
+        print(message2);
+    }
 
     if(0x20 <= interruptNumber && interruptNumber < 0x30)
     {

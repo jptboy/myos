@@ -1,6 +1,7 @@
 #include "types.hpp"
 #include "gdt.hpp"
 #include "interrupts.hpp"
+#include "keyboard.hpp"
 
 void print(char* s)
 {
@@ -55,6 +56,7 @@ extern "C" void entry(const void* multiboot_struct, unsigned int magicnumber)
     print("line2\n");
     GlobalDescriptorTable gdt;
     InterruptManager idt(&gdt);
+    KeyboardDriver keyboard(&idt);
     idt.Activate();
 
     while(1)

@@ -4,8 +4,28 @@
 #include "port.hpp"
 #include "gdt.hpp"
 
+
+struct InterruptManager;
+
+struct InterruptHandler
+{
+    virtual uint32_t HandleInterrupt(uint32_t esp);
+
+
+    protected:
+        uint8_t interruptNumber;
+        InterruptManager* interruptManager;
+
+        InterruptHandler(uint8_t interruptNumber, InterruptManager* interruptManager);
+        ~InterruptHandler();
+};
+
+
 struct InterruptManager
 {
+    friend struct InterruptHandler;
+    InterruptHandler* handlers[256];
+
     static uint32_t handleInterrupt(uint8_t interruptNumber, uint32_t esp);
     static void HandleInterruptRequest0x00();
     static void HandleInterruptRequest0x01();

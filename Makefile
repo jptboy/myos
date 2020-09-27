@@ -4,7 +4,7 @@ ASPARAMS = --32
 
 ldparams = -melf_i386
 
-objects = loader.o interruptstubs.o kernel.o gdt.o port.o interrupts.o
+objects = loader.o interruptstubs.o kernel.o gdt.o port.o interrupts.o keyboard.o
 
 %.o: %.cpp
 	g++ $(GPPPARAMS) -o $@ -c $<
