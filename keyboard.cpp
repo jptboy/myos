@@ -26,6 +26,7 @@ KeyboardDriver::~KeyboardDriver()
 
 uint32_t KeyboardDriver::HandleInterrupt(uint32_t esp)
 {
+    char* keys = "1234567890-=\b\tqwertyuiop[]\n asdfghjkl;'` \\zxcvbnm,./                                  ";
     uint8_t key = dataport.Read();
     if (key < 0x80)
     {
@@ -33,14 +34,14 @@ uint32_t KeyboardDriver::HandleInterrupt(uint32_t esp)
         {
             case 0xFA: case 0xC5: case 0x45: break;
             default:
-                char* keypress = "0x00";
+                char* keypress = "0x00\n";
                 char* hex = "0123456789ABCDEF";
 
                 keypress[2] = hex[(key >> 4) & 0xf];
                 keypress[3] = hex[(key)& 0xf];
-
-                print(keypress);
-                print("\n");
+                char* ans = "\0";
+                ans[0] = keys[key-(uint8_t)0x2];
+                print(ans);
                 break;
         }
     }

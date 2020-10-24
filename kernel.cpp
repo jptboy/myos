@@ -2,6 +2,7 @@
 #include "gdt.hpp"
 #include "interrupts.hpp"
 #include "keyboard.hpp"
+#include "port.hpp"
 
 void print(char* s)
 {
@@ -16,6 +17,13 @@ void print(char* s)
             case '\n':
                 y++;
                 x=0;
+                break;
+            case '\t':
+                x+=4;
+                break;
+            case '\b':
+                x = (x==0) ? (0) : (x - 1);
+                VideoMemory[80*y+x] = (VideoMemory[80*y+x] & 0xFF00) | '\0';
                 break;
             default:
                 VideoMemory[80*y+x] = (VideoMemory[80*y+x] & 0xFF00) | s[i];
